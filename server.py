@@ -1,5 +1,6 @@
 from flask import Flask
 from json import JSONEncoder
+import os
 from twitter import get_api
 
 app = Flask(__name__)
@@ -13,4 +14,4 @@ def index():
     })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=os.getenv('PORT', 8080))
