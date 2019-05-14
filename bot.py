@@ -1,3 +1,7 @@
+"""
+The stuff that the bot actually does
+"""
+
 import argparse
 from jmdict import JMDict
 from twitter import get_api

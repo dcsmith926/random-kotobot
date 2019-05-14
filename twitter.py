@@ -1,3 +1,7 @@
+"""
+One place where we instantiate our tweepy API instance
+"""
+
 import os
 import tweepy
 

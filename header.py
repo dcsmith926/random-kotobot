@@ -1,3 +1,7 @@
+"""
+Functions for randomly generating the Twitter header image
+"""
+
 from math import sqrt
 import os
 import random

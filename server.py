@@ -1,3 +1,7 @@
+"""
+A simple web server
+"""
+
 from flask import Flask
 from json import JSONEncoder
 import os
@@ -7,6 +11,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    """
+    Return total number of tweets bot has tweeted so far
+    """
     api = get_api()
     user = api.me()
     return JSONEncoder().encode({

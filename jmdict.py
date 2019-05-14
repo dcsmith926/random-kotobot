@@ -1,3 +1,7 @@
+"""
+Utilities for working with teh JMdict file
+"""
+
 import gzip
 import os
 import random
