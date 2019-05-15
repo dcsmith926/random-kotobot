@@ -2,9 +2,9 @@
 A simple web server
 """
 
-from flask import Flask
-from json import JSONEncoder
 import os
+from flask import Flask, jsonify
+
 from twitter import get_api
 
 app = Flask(__name__)
@@ -16,7 +16,7 @@ def index():
     """
     api = get_api()
     user = api.me()
-    return JSONEncoder().encode({
+    return jsonify({
         'num_tweets': user.statuses_count,
     })
 
