@@ -32,20 +32,24 @@ def index():
 @auth.login_required
 def tweet():
     """
-    Tweet a random word and return the tweet as JSON
+    Tweet a random word and return the tweet's ID
     """
     tweet = bot.tweet_random_word()
-    return jsonify(tweet)
+    return jsonify({
+        'tweet_id': tweet.id_str,
+    })
 
 @app.route('/update-header')
 @auth.login_required
 def update_header():
     """
     Update the Twitter header (API method returns the User object,
-    so we'll just return that too) 
+    so we'll just return the user's ID
     """
     user = bot.update_header_image()
-    return jsonify(user)
+    return jsonify({
+        'user_id': user.id_str,
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=os.getenv('PORT', 8080))
