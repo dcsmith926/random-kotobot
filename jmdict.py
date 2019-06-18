@@ -1,5 +1,5 @@
 """
-Utilities for working with teh JMdict file
+Utilities for working with the JMdict file
 """
 
 import gzip
@@ -27,7 +27,14 @@ def download_JMdict():
 
 def map_entry_to_dict(entry):
 
+    # an entry element can have:
+    # 0 or more kanji elements
+    # 1 or more reading elements
+    # 1 or more sense elements
+
     d = {
+        'kanji': [],
+        'readings': [],
         'senses': [],
     }
 
@@ -39,12 +46,14 @@ def map_entry_to_dict(entry):
             d['seq'] = child.text
 
         elif tag == 'k_ele':
-            keb = child.find('keb')
-            d['kanji'] = keb.text
+            for c in child:
+                if c.tag == 'keb':
+                    d['kanji'].append(c.text)
 
         elif tag == 'r_ele':
-            reb = child.find('reb')
-            d['reading'] = reb.text
+            for c in child:
+                if c.tag == 'reb':
+                    d['readings'].append(c.text)
 
         elif tag == 'sense':
             sense = []
@@ -63,23 +72,42 @@ class JMDict_entry(object):
     def __repr__(self):
         return self.to_string()
 
-    def to_string(self, with_reading=False):
+    def to_string(self, include_kanji='first', include_reading='first_if_no_kanji'):
+        """
+        We display only the text from this first kanji element listed, with all readings listed,
+        or only the first reading listed if no kanji element exists
+        by default.
+        """
 
-        kanji = self.d.get('kanji', None) 
-        reading = self.d['reading'] 
+        kanji = self.d['kanji']
+        kanji_text = None
 
-        if kanji:
-            if with_reading:
-                return '{} ({})'.format(kanji, reading)
-            else:
-                return kanji
+        if len(kanji) > 0:
+            if include_kanji == 'first':
+                kanji_text = kanji[0]
+            elif include_kanji == 'random':
+                random.choice(kanji)
+            elif include_kanji == 'all':
+                kanji_text = ', '.join(kanji)
+
+        readings = self.d['readings']
+
+        if include_reading == 'first' or (include_reading == 'first_if_no_kanji' and kanji_text is None):
+            reading_text = readings[0]
+        elif include_reading == 'random':
+            reading_text = random.choice(readings)
         else:
-            return reading
+            reading_text = ', '.join(readings)
+
+        if not kanji_text is None:
+            return '{} ({})'.format(kanji_text, reading_text)
+        else:
+            return reading_text
 
     def get_definition(self):
         definition_parts = ['{}. {}'.format(i + 1, '; '.join(sense)) for i, sense in enumerate(self.d['senses'])]
         definition = '\n'.join(definition_parts)
-        return '{}:\n{}'.format(self.to_string(with_reading=True), definition)
+        return '{}:\n{}'.format(self.to_string(), definition)
 
 class JMDict(object):
 
