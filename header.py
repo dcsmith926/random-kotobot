@@ -1,5 +1,8 @@
 """
-Functions for randomly generating the Twitter header image
+Functions for randomly generating the Twitter header image.
+It's a very naive approach that just tries to fit random words
+into random positions in the image without overlapping other words.
+It loops forever, doing this until NUM_WORDS have been successfully inserted into the image. 
 """
 
 from math import sqrt
@@ -17,31 +20,16 @@ HEADER_PATH = 'header.png'
 FONT_PATH = 'font/SoukouMincho/SoukouMincho.ttf'
 FONT_SIZE = 72
 
-NUM_WORDS = 40 
-MAX_TRY_FIT_WORD = 100
+NUM_WORDS = 25 
+MAX_TRY_FIT_WORD = 100 
 
 TEXT_FILL_COLOR = (255, 255, 255, 252) 
 TEXT_STROKE_COLOR = (255, 0, 255, 252)
 TEXT_STROKE_SIZE = 2
 
-def random_coords(max_x, max_y, range_x, range_y):
-
-    x = random.randint(0, int(max_x))
-    y = random.randint(0, int(max_y))
-
-    x_offset = random.randint(0, int(range_x))
-    y_offset = random.randint(0, int(range_y))
-
-    if random.random() < 0.5:
-        x = x + x_offset
-    else:
-        x = x - x_offset
-
-    if random.random() < 0.5:
-        y = y + y_offset
-    else:
-        y = y - y_offset
-
+def random_coords(min_x, max_x, min_y, max_y):
+    x = random.randint(int(min_x), int(max_x))
+    y = random.randint(int(min_y), int(max_y))
     return (x, y)
 
 def rect_overlap(rect1, rect2):
@@ -90,9 +78,19 @@ def find_good_position(text_size, used_areas):
 
     text_width, text_height = text_size
 
+    # how far the text can overflow edge of image
+    overflow_x = text_width / 2
+    overflow_y = text_height / 2
+
+    min_x = 0 - overflow_x
+    max_x = HEADER_WIDTH + overflow_x
+
+    min_y = 0 - overflow_y 
+    max_y = HEADER_HEIGHT + overflow_y
+
     tries = 0
     while tries < MAX_TRY_FIT_WORD:
-        text_position = random_coords(HEADER_WIDTH, HEADER_HEIGHT, text_width / 2, text_height / 2)
+        text_position = random_coords(min_x, max_x, min_y, max_y)
         if not too_close(text_position, text_size, used_areas):
             break
         tries += 1
@@ -108,6 +106,9 @@ def draw_text(draw, text, position, font, fill_color, stroke_size=0, stroke_colo
 
     x, y = position
 
+    # a hacky way to draw text with stroke is to draw the text using the stroke color
+    # multiple times at various offsets from the actual position,
+    # and then draw the text using the fill color at the actual position
     if stroke_size > 0:
         for i in range(stroke_size + 1):
             draw.text((x, y + i), text, font=font, fill=stroke_color)

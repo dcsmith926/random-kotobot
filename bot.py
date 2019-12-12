@@ -10,8 +10,8 @@ from header import generate_header, HEADER_PATH
 
 class TwitterBot(object):
 
-    def __init__(self):
-        self.api = get_api()
+    def __init__(self, api):
+        self.api = api 
 
     def get_num_tweets(self):
         user = self.api.me()
@@ -32,7 +32,7 @@ def main():
     parser.add_argument('--update-header', action='store_true')
     args = parser.parse_args()
 
-    bot = TwitterBot()
+    bot = TwitterBot(get_api())
 
     if args.update_header:
         bot.update_header_image()

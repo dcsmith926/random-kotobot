@@ -86,7 +86,7 @@ class JMDict_entry(object):
             if include_kanji == 'first':
                 kanji_text = kanji[0]
             elif include_kanji == 'random':
-                random.choice(kanji)
+                kanji_text = random.choice(kanji)
             elif include_kanji == 'all':
                 kanji_text = ', '.join(kanji)
 
