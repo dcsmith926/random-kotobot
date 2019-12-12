@@ -7,9 +7,10 @@ from flask import Flask, jsonify
 from flask_httpauth import HTTPTokenAuth
 from hashlib import blake2b 
 
+from twitter import get_api
 from bot import TwitterBot 
 
-bot = TwitterBot()
+bot = TwitterBot(get_api())
 
 app = Flask(__name__)
 auth = HTTPTokenAuth(scheme='Token')
